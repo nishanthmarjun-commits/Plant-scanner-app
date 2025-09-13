@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantScan - Plant Health Scanner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #2e7d32;
+        }
+
+        header {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: #388e3c;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn:hover {
+            background-color: #388e3c;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .panel {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8f5e9;
+        }
+
+        .panel-title i {
+            font-size: 20px;
+            color: #388e3c;
+        }
+
+        .panel-title h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .scanner {
+            grid-column: 1 / 2;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .scanner-view {
+            width: 100%;
+            height: 300px;
+            background-color: #f1f8e9;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .scanner-view img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .scanner-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #78909c;
+        }
+
+        .scanner-placeholder i {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .scanner-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .scan-btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .health-data {
+            grid-column: 2 / 3;
+        }
+
+        .metrics {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            flex: 1;
+            background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .metric-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+        }
+
+        .progress-container {
+            margin-top: 15px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+        }
+
+        .temperature-fill {
+            background: linear-gradient(to right, #64b5f6, #e53935);
+            width: 75%;
+        }
+
+        .water-fill {
+            background: linear-gradient(to right, #4fc3f7, #01579b);
+            width: 40%;
+        }
+
+        .plant-info {
+            margin-top: 20px;
+        }
+
+        .plant-details {
+            background-color: #f1f8e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .plant-id {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .plant-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .plant-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .plant-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .plant-care {
+            margin-top: 15px;
+        }
+
+        .care-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .care-item i {
+            color: #388e3c;
+        }
+
+        .diseases {
+            grid-column: 1 / 3;
+            margin-top: 10px;
+        }
+
+        .disease-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .disease-card {
+            background-color: #ffebee;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .disease-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .disease-name {
+            font-weight: 600;
+            color: #c62828;
+        }
+
+        .disease-desc {
+            font-size: 14px;
+            color: #424242;
+            margin-bottom: 10px;
+        }
+
+        .disease-solution {
+            font-size: 14px;
+            color: #388e3c;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #78909c;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .scanner, .health-data, .diseases {
+                grid-column: 1 / 2;
+            }
+            
+            .metrics {
+                flex-direction: column;
+            }
+            
+            .disease-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-leaf"></i>
+            <h1>PlantScan</h1>
+        </div>
+        <div class="user-actions">
+            <button class="btn"><i class="fas fa-history"></i> History</button>
+            <button class="btn"><i class="fas fa-user"></i> Profile</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="panel scanner">
+            <div class="panel-title">
+                <i class="fas fa-camera"></i>
+                <h2>Plant Scanner</h2>
+            </div>
+            <div class="scanner-view">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/a6a64783-8694-4cb3-a3b4-f0c04a1dd00f.png" alt="Plant scanning interface showing a green Monstera plant with large glossy leaves in a terracotta pot" id="scanner-image">
+                <div class="scanner-placeholder" id="scanner-placeholder">
+                    <i class="fas fa-camera"></i>
+                    <p>Point at a plant to scan</p>
+                </div>
+            </div>
+            <div class="scanner-controls">
+                <button class="btn scan-btn" id="scan-btn"><i class="fas fa-search"></i> Scan Plant</button>
+                <button class="btn" id="upload-btn"><i class="fas fa-upload"></i> Upload Image</button>
+            </div>
+        </div>
+
+        <div class="panel health-data">
+            <div class="panel-title">
+                <i class="fas fa-heartbeat"></i>
+                <h2>Health Data</h2>
+            </div>
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="metric-value">24°C</div>
+                    <div class="metric-label">Temperature</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="metric-value">40%</div>
+                    <div class="metric-label">Water Level</div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Temperature</span>
+                    <span>24°C / 30°C</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill temperature-fill"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Water Level</span>
+                    <span>40% / 100%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill water-fill"></div>
+                </div>
+            </div>
+            <div class="plant-info">
+                <h3>Plant Identification</h3>
+                <div class="plant-details">
+                    <div class="plant-id">
+                        <div class="plant-image">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/9cdee426-8f4c-4d3c-bb7c-f92bf26dcab6.png" alt="Close-up of Monstera deliciosa leaf with characteristic holes and deep green color">
+                        </div>
+                        <div>
+                            <div class="plant-name">Monstera Deliciosa</div>
+                            <div>Swiss Cheese Plant</div>
+                        </div>
+                    </div>
+                    <div class="plant-care">
+                        <div class="care-item">
+                            <i class="fas fa-sun"></i>
+                            <span>Bright, indirect light</span>
+                        </div>
+                        <div class="care-item">
+                            <i class="fas fa-tint"></i>
+                            <span>Water when top soil is dry</span>
+                        </div>
+                        <div class="care-item">
+                            <i class="fas fa-ruler-combined"></i>
+                            <span>Can grow up to 3 meters indoors</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel diseases">
+            <div class="panel-title">
+                <i class="fas fa-bug"></i>
+                <h2>Disease Detection</h2>
+            </div>
+            <div class="disease-list">
+                <div class="disease-card">
+                    <div class="disease-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div class="disease-name">Leaf Spot Disease</div>
+                    </div>
+                    <div class="disease-desc">
+                        Small brown spots with yellow halos detected on lower leaves. Early stage infection.
+                    </div>
+                    <div class="disease-solution">
+                        <strong>Solution:</strong> Remove affected leaves and apply copper-based fungicide.
+                    </div>
+                </div>
+                <div class="disease-card">
+                    <div class="disease-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div class="disease-name">Root Rot Risk</div>
+                    </div>
+                    <div class="disease-desc">
+                        Soil moisture is high, increasing risk of root rot. Poor drainage detected.
+                    </div>
+                    <div class="disease-solution">
+                        <strong>Solution:</strong> Reduce watering frequency and improve potting mix drainage.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>PlantScan © 2023 - AI-powered plant health monitoring system</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const scanBtn = document.getElementById('scan-btn');
+            const uploadBtn = document.getElementById('upload-btn');
+            const scannerImage = document.getElementById('scanner-image');
+            const scannerPlaceholder = document.getElementById('scanner-placeholder');
+            
+            // Show scanner image and hide placeholder
+            function showScannerImage() {
+                scannerImage.style.display = 'block';
+                scannerPlaceholder.style.display = 'none';
+            }
+            
+            // Simulate scan process
+            scanBtn.addEventListener('click', function() {
+                showScannerImage();
+                scanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning...';
+                scanBtn.disabled = true;
+                
+                // Simulate scanning process
+                setTimeout(function() {
+                    scanBtn.innerHTML = '<i class="fas fa-search"></i> Scan Plant';
+                    scanBtn.disabled = false;
+                    
+                    // Update image to show a different plant (simulated result)
+                    scannerImage.src = "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ed796269-55f1-49f3-852e-cbfc9b603688.png";
+                    scannerImage.alt = "Scanned plant image showing Monstera deliciosa with large green leaves";
+                    
+                    // In a real app, this is where you would process the image and update all data
+                }, 2000);
+            });
+            
+            // Simulate upload process
+            uploadBtn.addEventListener('click', function() {
+                showScannerImage();
+                // In a real app, this would open a file dialog
+                alert("In a real application, this would open a file dialog to upload a plant image.");
+            });
+        });
+    </script>
+</body>
+</html>
